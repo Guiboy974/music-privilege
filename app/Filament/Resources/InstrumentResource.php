@@ -28,8 +28,7 @@ class InstrumentResource extends Resource
                 Forms\Components\TextInput::make('sku')
                     ->label('SKU')
                     ->required(),
-                Forms\Components\Select::make('categorie')
-                    ->searchable()
+                Forms\Components\TextInput::make('categorie')
                     ->required(),
                 Forms\Components\TextInput::make('categorie_ids')
                     ->required()

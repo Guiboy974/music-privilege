@@ -10,12 +10,12 @@ class CreateInstrument extends CreateRecord
 {
     protected static string $resource = InstrumentResource::class;
 
-    public function getProductSku() {
-        $client = app(\JustBetter\MagentoClient\Client\Magento::class);
-        $client->get('products/sku');
-        if ($client->isSuccess()) {
-            return $client->getResponse();
-        }
-    }
+//    public function getProductSku() {
+//        $client = app(\JustBetter\MagentoClient\Client\Magento::class);
+//        $client->get('products/sku');
+//        if ($client->isSuccess()) {
+//            return $client->getResponse();
+//        }
+//    }
 
 }
