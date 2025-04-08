@@ -1,0 +1,57 @@
+models:
+  User:
+    name: string
+    email: string unique
+    email_verified_at: timestamp nullable
+    password: string
+    remember_token: string nullable
+    is_admin: boolean default:true
+    timestamps: true
+
+  Instrument:
+    sku: string
+    categorie: string
+    categorie_ids: id unique
+    name: string
+    description: string nullable
+    short_description: string nullable
+    weight: integer
+    product_online: boolean default:true
+    tax_class_name: integer
+    visibility: string nullable
+    price: decimal:8,2
+    special_price: decimal:8,2 nullable
+    special_price_to_date: decimal:8,2 nullable
+    url_key: string
+    base_image: string
+    qty: integer
+    out_of_stock_qty: integer
+    max_cart_qty: integer
+    is_in_stock: boolean default:false
+    manage_stock: integer
+    additional_image: string nullable
+    available: string nullable
+    code_famille: string
+    cost: decimal:8,2
+    ean: string nullable
+    enattente: string nullable
+    encommande: integer nullable
+    garantie: integer nullable
+    is_solde: string nullable
+    manufacturer: string
+    occasion: boolean default:false
+    prix_public: decimal:8,2
+    real_sku: string
+    plus_produit: string nullable
+    eco: decimal:3,2 nullable
+    caracteristique: string nullable
+    instruments: string nullable
+    avis_profdeux: string nullable
+    ean_code: string nullable
+    ecotaxe: decimal:3,2 nullable
+
+controllers:
+  InstrumentController:
+    resource: Instrument
+
+
