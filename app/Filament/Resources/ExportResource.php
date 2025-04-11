@@ -46,7 +46,7 @@ class ExportResource extends Resource
                     ->schema([
                         Select::make('attribut')
                             ->options(collect((new Export())->getFillable())
-                                ->reject(fn ($field) => in_array($field, ['name_marketplace', 'name_export', 'entete']))
+                                ->reject(fn ($field) => in_array($field, ['name_marketplace', 'name_export']))
                                 ->mapWithKeys(fn ($field) => [$field => ucfirst(str_replace('_', ' ', $field))])->toArray(),
                             )
                             ->live()

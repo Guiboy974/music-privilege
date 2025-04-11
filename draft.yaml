@@ -9,50 +9,48 @@ models:
     timestamps: true
 
   Marketplace:
-    id: integer unique
-    name: string
+    name: string unique
     description: string nullable
-    url: string
+    url: string nullable
     logo: string nullable
-    is_active: boolean
+    is_active: boolean nullable
 
   Export:
     name_marketplace: string
     name_export: string
-    name: string
-    entete: string
-    sku: string
-    categorie: string
-    categorie_ids: id unique
+    name: string nullable
+    sku: string nullable
+    categorie: string nullable
+    categorie_ids: string nullable
     description: string nullable
     short_description: string nullable
-    weight: integer
-    product_online: boolean
-    tax_class_name: integer
+    weight: integer nullable
+    product_online: string nullable
+    tax_class_name: integer nullable
     visibility: string nullable
-    price: decimal precision:8 scale:2
+    price: decimal precision:8 scale:2 nullable
     special_price: decimal precision:8 scale:2 nullable
     special_price_to_date: decimal precision:8 scale:2 nullable
-    url_key: string
-    base_image: string
-    qty: integer
-    out_of_stock_qty: integer
-    max_cart_qty: integer
-    is_in_stock: boolean
-    manage_stock: integer
+    url_key: string nullable
+    base_image: string nullable
+    qty: integer nullable
+    out_of_stock_qty: integer nullable
+    max_cart_qty: integer nullable
+    is_in_stock: string nullable
+    manage_stock: integer nullable
     additional_image: string nullable
     available: string nullable
-    code_famille: string
-    cost: decimal precision:8 scale:2
+    code_famille: string nullable
+    cost: decimal precision:8 scale:2 nullable
     ean: string nullable
     enattente: string nullable
     encommande: integer nullable
     garantie: integer nullable
     is_solde: string nullable
-    manufacturer: string
-    occasion: boolean default:false
-    prix_public: decimal precision:8 scale:2
-    real_sku: string
+    manufacturer: string nullable
+    occasion: string nullable
+    prix_public: decimal precision:8 scale:2 nullable
+    real_sku: string nullable
     plus_produit: string nullable
     eco: decimal precision:8 scale:2 nullable
     caracteristique: string nullable
@@ -61,7 +59,7 @@ models:
     ean_code: string nullable
     ecotaxe: decimal precision:8 scale:2 nullable
     frequence: string nullable
-    is_active: boolean default:true
+    is_active: boolean default:true nullable
     relationships:
       hasMany: Marketplace
 

@@ -14,16 +14,15 @@ return new class extends Migration
         Schema::create('exports', function (Blueprint $table) {
             $table->id();
             $table->string('name_marketplace');
-            $table->string('name_export')->nullable();
+            $table->string('name_export');
             $table->string('name')->nullable();
-            $table->string('entete')->nullable();
             $table->string('sku')->nullable();
             $table->string('categorie')->nullable();
-            $table->foreignId('categorie_ids')->nullable();
+            $table->string('categorie_ids')->nullable();
             $table->string('description')->nullable();
             $table->string('short_description')->nullable();
             $table->integer('weight')->nullable();
-            $table->boolean('product_online')->nullable();
+            $table->string('product_online')->nullable();
             $table->integer('tax_class_name')->nullable();
             $table->string('visibility')->nullable();
             $table->decimal('price')->nullable();
@@ -34,7 +33,7 @@ return new class extends Migration
             $table->integer('qty')->nullable();
             $table->integer('out_of_stock_qty')->nullable();
             $table->integer('max_cart_qty')->nullable();
-            $table->boolean('is_in_stock')->nullable();
+            $table->string('is_in_stock')->nullable();
             $table->integer('manage_stock')->nullable();
             $table->string('additional_image')->nullable();
             $table->string('available')->nullable();
@@ -46,7 +45,7 @@ return new class extends Migration
             $table->integer('garantie')->nullable();
             $table->string('is_solde')->nullable();
             $table->string('manufacturer')->nullable();
-            $table->boolean('occasion')->default(false)->nullable();
+            $table->string('occasion')->nullable();
             $table->decimal('prix_public')->nullable();
             $table->string('real_sku')->nullable();
             $table->string('plus_produit')->nullable();

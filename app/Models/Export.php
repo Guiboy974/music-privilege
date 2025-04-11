@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Export extends Model
@@ -20,7 +19,6 @@ class Export extends Model
         'name_marketplace',
         'name_export',
         'name',
-        'entete',
         'sku',
         'categorie',
         'categorie_ids',
@@ -71,14 +69,10 @@ class Export extends Model
      */
     protected $casts = [
         'id' => 'integer',
-        'categorie_ids' => 'integer',
-        'product_online' => 'boolean',
         'price' => 'decimal',
         'special_price' => 'decimal',
         'special_price_to_date' => 'decimal',
-        'is_in_stock' => 'boolean',
         'cost' => 'decimal',
-        'occasion' => 'boolean',
         'prix_public' => 'decimal',
         'eco' => 'decimal',
         'ecotaxe' => 'decimal',
@@ -89,5 +83,4 @@ class Export extends Model
     {
         return $this->hasMany(Marketplace::class);
     }
-
 }

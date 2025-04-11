@@ -21,6 +21,14 @@ class ExportAmazon extends Export
                 'type' => 'string',
                 'max_length' => 200,
             ],
+            'description' => [
+                'type' => 'string',
+                'max_length' => 2000,
+            ],
+            'short_description' => [
+                'type' => 'string',
+                'max_length' => 500,
+            ],
         ];
     }
 

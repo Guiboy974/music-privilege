@@ -28,6 +28,7 @@ class Marketplace extends Model
      * @var array
      */
     protected $casts = [
+        'id' => 'integer',
         'is_active' => 'boolean',
     ];
 }

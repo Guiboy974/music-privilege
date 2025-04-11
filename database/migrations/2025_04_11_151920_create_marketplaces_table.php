@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('marketplaces', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('name');
+            $table->id();
+            $table->string('name')->unique();
             $table->string('description')->nullable();
-            $table->string('url');
+            $table->string('url')->nullable();
             $table->string('logo')->nullable();
-            $table->boolean('is_active');
+            $table->boolean('is_active')->nullable();
             $table->timestamps();
         });
     }

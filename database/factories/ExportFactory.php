@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
-use App\Models\Categorie;
 use App\Models\Export;
 
 class ExportFactory extends Factory
@@ -25,14 +24,13 @@ class ExportFactory extends Factory
             'name_marketplace' => fake()->word(),
             'name_export' => fake()->word(),
             'name' => fake()->name(),
-            'entete' => fake()->word(),
             'sku' => fake()->word(),
             'categorie' => fake()->word(),
             'categorie_ids' => fake()->word(),
             'description' => fake()->text(),
             'short_description' => fake()->word(),
             'weight' => fake()->numberBetween(-10000, 10000),
-            'product_online' => fake()->boolean(),
+            'product_online' => fake()->word(),
             'tax_class_name' => fake()->numberBetween(-10000, 10000),
             'visibility' => fake()->word(),
             'price' => fake()->randomFloat(0, 0, 9999999999.),
@@ -43,7 +41,7 @@ class ExportFactory extends Factory
             'qty' => fake()->numberBetween(-10000, 10000),
             'out_of_stock_qty' => fake()->numberBetween(-10000, 10000),
             'max_cart_qty' => fake()->numberBetween(-10000, 10000),
-            'is_in_stock' => fake()->boolean(),
+            'is_in_stock' => fake()->word(),
             'manage_stock' => fake()->numberBetween(-10000, 10000),
             'additional_image' => fake()->word(),
             'available' => fake()->word(),
@@ -55,7 +53,7 @@ class ExportFactory extends Factory
             'garantie' => fake()->numberBetween(-10000, 10000),
             'is_solde' => fake()->word(),
             'manufacturer' => fake()->word(),
-            'occasion' => fake()->boolean(),
+            'occasion' => fake()->word(),
             'prix_public' => fake()->randomFloat(0, 0, 9999999999.),
             'real_sku' => fake()->word(),
             'plus_produit' => fake()->word(),
