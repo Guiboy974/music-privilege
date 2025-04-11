@@ -26,11 +26,9 @@ class MarketplaceResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required(),
                 Forms\Components\TextInput::make('description'),
-                Forms\Components\TextInput::make('url')
-                    ->required(),
+                Forms\Components\TextInput::make('url'),
                 Forms\Components\TextInput::make('logo'),
-                Forms\Components\Toggle::make('is_active')
-                    ->required(),
+                Forms\Components\Toggle::make('is_active'),
             ]);
     }
 

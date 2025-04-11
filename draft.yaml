@@ -19,7 +19,8 @@ models:
   Export:
     name_marketplace: string
     name_export: string
-    name_product: string
+    name: string
+    entete: string
     sku: string
     categorie: string
     categorie_ids: id unique

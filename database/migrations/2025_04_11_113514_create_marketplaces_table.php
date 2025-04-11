@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('marketplaces', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
             $table->string('name');
             $table->string('description')->nullable();
             $table->string('url');

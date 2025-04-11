@@ -24,10 +24,11 @@ class ExportFactory extends Factory
         return [
             'name_marketplace' => fake()->word(),
             'name_export' => fake()->word(),
-            'name_product' => fake()->word(),
+            'name' => fake()->name(),
+            'entete' => fake()->word(),
             'sku' => fake()->word(),
             'categorie' => fake()->word(),
-            'categorie_ids' => Categorie::factory(),
+            'categorie_ids' => fake()->word(),
             'description' => fake()->text(),
             'short_description' => fake()->word(),
             'weight' => fake()->numberBetween(-10000, 10000),

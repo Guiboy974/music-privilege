@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('exports', function (Blueprint $table) {
             $table->id();
             $table->string('name_marketplace');
-            $table->string('name_export');
-            $table->string('name_product')->nullable();
-            $table->string('sku');
+            $table->string('name_export')->nullable();
+            $table->string('name')->nullable();
+            $table->string('entete')->nullable();
+            $table->string('sku')->nullable();
             $table->string('categorie')->nullable();
             $table->foreignId('categorie_ids')->nullable();
             $table->string('description')->nullable();
@@ -45,7 +46,7 @@ return new class extends Migration
             $table->integer('garantie')->nullable();
             $table->string('is_solde')->nullable();
             $table->string('manufacturer')->nullable();
-            $table->boolean('occasion')->default(false);
+            $table->boolean('occasion')->default(false)->nullable();
             $table->decimal('prix_public')->nullable();
             $table->string('real_sku')->nullable();
             $table->string('plus_produit')->nullable();
@@ -56,7 +57,7 @@ return new class extends Migration
             $table->string('ean_code')->nullable();
             $table->decimal('ecotaxe')->nullable();
             $table->string('frequence')->nullable();
-            $table->boolean('is_active')->default(true);
+            $table->boolean('is_active')->default(true)->nullable();
             $table->timestamps();
         });
     }

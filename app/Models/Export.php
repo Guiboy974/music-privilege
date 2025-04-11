@@ -19,7 +19,8 @@ class Export extends Model
     protected $fillable = [
         'name_marketplace',
         'name_export',
-        'name_product',
+        'name',
+        'entete',
         'sku',
         'categorie',
         'categorie_ids',
@@ -89,8 +90,4 @@ class Export extends Model
         return $this->hasMany(Marketplace::class);
     }
 
-    public function categorie(): BelongsTo
-    {
-        return $this->belongsTo(Categorie::class);
-    }
 }
