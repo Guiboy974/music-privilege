@@ -17,7 +17,7 @@ class Product extends Model
      * @var array
      */
     protected $fillable = [
-        'name_product',
+        'name',
         'sku',
         'categorie',
         'categorie_ids',
@@ -34,11 +34,10 @@ class Product extends Model
         'base_image',
         'qty',
         'out_of_stock_qty',
-        'max_cart_qty',
         'is_in_stock',
         'manage_stock',
         'additional_image',
-        'available',
+        'status',
         'code_famille',
         'cost',
         'ean',

@@ -69,10 +69,13 @@ class Export extends Model
      */
     protected $casts = [
         'id' => 'integer',
+        'product_online' => 'boolean',
         'price' => 'decimal',
         'special_price' => 'decimal',
         'special_price_to_date' => 'decimal',
+        'is_in_stock' => 'boolean',
         'cost' => 'decimal',
+        'occasion' => 'boolean',
         'prix_public' => 'decimal',
         'eco' => 'decimal',
         'ecotaxe' => 'decimal',

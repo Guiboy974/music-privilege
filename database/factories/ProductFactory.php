@@ -22,7 +22,7 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'name_product' => fake()->word(),
+            'name' => fake()->name(),
             'sku' => fake()->word(),
             'categorie' => fake()->word(),
             'categorie_ids' => Categorie::factory(),
@@ -39,7 +39,6 @@ class ProductFactory extends Factory
             'base_image' => fake()->word(),
             'qty' => fake()->numberBetween(-10000, 10000),
             'out_of_stock_qty' => fake()->numberBetween(-10000, 10000),
-            'max_cart_qty' => fake()->numberBetween(-10000, 10000),
             'is_in_stock' => fake()->boolean(),
             'manage_stock' => fake()->numberBetween(-10000, 10000),
             'additional_image' => fake()->word(),

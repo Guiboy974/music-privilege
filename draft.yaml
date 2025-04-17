@@ -1,19 +1,12 @@
 models:
-  User:
-    name: string
-    email: string unique
-    email_verified_at: timestamp nullable
-    password: string
-    remember_token: string nullable
-    is_admin: boolean default:true
-    timestamps: true
 
   Marketplace:
-    name: string unique
+    id: id
+    name: string
     description: string nullable
     url: string nullable
     logo: string nullable
-    is_active: boolean nullable
+    is_active: boolean
 
   Export:
     name_marketplace: string
@@ -25,7 +18,7 @@ models:
     description: string nullable
     short_description: string nullable
     weight: integer nullable
-    product_online: string nullable
+    product_online: boolean nullable
     tax_class_name: integer nullable
     visibility: string nullable
     price: decimal precision:8 scale:2 nullable
@@ -36,7 +29,7 @@ models:
     qty: integer nullable
     out_of_stock_qty: integer nullable
     max_cart_qty: integer nullable
-    is_in_stock: string nullable
+    is_in_stock: boolean nullable
     manage_stock: integer nullable
     additional_image: string nullable
     available: string nullable
@@ -48,7 +41,7 @@ models:
     garantie: integer nullable
     is_solde: string nullable
     manufacturer: string nullable
-    occasion: string nullable
+    occasion: boolean default:false nullable
     prix_public: decimal precision:8 scale:2 nullable
     real_sku: string nullable
     plus_produit: string nullable
@@ -64,39 +57,38 @@ models:
       hasMany: Marketplace
 
   Product:
-    name_product: string
-    sku: string
-    categorie: string
-    categorie_ids: id unique
+    name: string nullable
+    sku: string nullable
+    categorie: string nullable
+    categorie_ids: id unique nullable
     description: string nullable
     short_description: string nullable
-    weight: integer
-    product_online: boolean
-    tax_class_name: integer
+    weight: integer nullable
+    product_online: boolean nullable
+    tax_class_name: integer nullable
     visibility: string nullable
-    price: decimal precision:8 scale:2
+    price: decimal precision:8 scale:2 nullable
     special_price: decimal precision:8 scale:2 nullable
     special_price_to_date: decimal precision:8 scale:2 nullable
-    url_key: string
-    base_image: string
-    qty: integer
-    out_of_stock_qty: integer
-    max_cart_qty: integer
-    is_in_stock: boolean
-    manage_stock: integer
+    url_key: string nullable
+    base_image: string nullable
+    qty: integer nullable
+    out_of_stock_qty: integer nullable
+    is_in_stock: boolean nullable
+    manage_stock: integer nullable
     additional_image: string nullable
     available: string nullable
-    code_famille: string
-    cost: decimal precision:8 scale:2
+    code_famille: string nullable
+    cost: decimal precision:8 scale:2 nullable
     ean: string nullable
     enattente: string nullable
     encommande: integer nullable
     garantie: integer nullable
     is_solde: string nullable
-    manufacturer: string
-    occasion: boolean
-    prix_public: decimal precision:8 scale:2
-    real_sku: string
+    manufacturer: string nullable
+    occasion: boolean nullable
+    prix_public: decimal precision:8 scale:2 nullable
+    real_sku: string nullable
     plus_produit: string nullable
     eco: decimal precision:8 scale:2 nullable
     caracteristique: string nullable

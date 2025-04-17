@@ -24,6 +24,8 @@ return [
             /* Magento access token of an integration */
             'access_token' => env('MAGENTO_ACCESS_TOKEN'),
 
+            'verify_ssl' => env('MAGENTO_VERIFY_SSL', true),
+
             /* Specify the timeout (in seconds) for the request. */
             'timeout' => 30,
 
