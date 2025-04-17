@@ -87,4 +87,35 @@ class MarketplaceResource extends Resource
             'edit' => Pages\EditMarketplace::route('/{record}/edit'),
         ];
     }
+
+    /**
+     * Renvoie les options disponibles pour les séparateurs de CSV.
+     *
+     * @return array
+     */
+    protected static function getSeparators(): array
+    {
+        return [
+            ';' => 'Point-virgule ( ; )',
+            ',' => 'Virgule ( , )',
+            '\t' => 'Tabulation (Tab)',
+            '|' => 'Barre verticale ( | )',
+            ' ' => 'Espace (blanc)',
+        ];
+    }
+
+    /**
+     * Renvoie les options disponibles pour les délimiteurs de CSV.
+     *
+     * @return array
+     */
+    protected static function getDelimiters(): array
+    {
+        return [
+            '"' => 'Double guillemet ( " )',
+            "'" => "Simple guillemet ( ' )",
+            ' ' => 'Aucun (espace)',
+            '|' => 'Barre verticale ( | )',
+        ];
+    }
 }
