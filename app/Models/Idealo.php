@@ -4,6 +4,8 @@ namespace App\Models;
 
 class Idealo extends DefaultMarketplaceModel
 {
+    protected const BASE_URL = 'https://staging.music-privilege.fr/';
+    protected const IMAGE_PATH = 'img/600/744/contains/catalog/product';
 
     /** transforme des valeurs dans les champs
      * @param $attributeKey
@@ -53,19 +55,44 @@ class Idealo extends DefaultMarketplaceModel
         return number_format((float) $value, 2, '.', '') . ' EUR';
     }
 
-    //TODO description max caractere 2000
+    /** limite a 2000 caractere max, en fonction du dernier point trouver
+     * @param $value
+     * @return string
+     */
     protected function formatDescription($value): string {
-        return $value;
+        $limite = 2000;
+
+        if (strlen($value) <= $limite) {
+            return $value;
+        }
+
+        $substring = substr($value, 0, $limite);
+        if (str_ends_with($substring, '.')) {
+            return $substring;
+        }
+
+        $lastDotPosition = strrpos($substring, '.');
+        if ($lastDotPosition !== false) {
+            return substr($substring, 0, $lastDotPosition + 1);
+        }
+
+        return $substring;
     }
 
-    //TODO valeur en https ou http
-    protected function formatUrl($value): string {
-        return $value;
+    /**
+     * @param string $value
+     * @return string
+     */
+    protected function formatUrl(string $value): string {
+        return self::BASE_URL . $value . '.html';
     }
 
-    //TODO URL directe vers image produit
-    protected function linkImage($value): string {
-        return $value;
+    /**
+     * @param string $value
+     * @return string
+     */
+    protected function linkImage(string $value): string {
+        return self::BASE_URL . self::IMAGE_PATH . $value;
     }
 
     //TODO valeur attendue in stock, ot of stock, preorder

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-class Leguide extends Idealo
+class LeGuide extends Idealo
 {
 
     /** transforme des valeurs dans les champs

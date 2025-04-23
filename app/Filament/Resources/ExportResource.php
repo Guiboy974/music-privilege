@@ -43,19 +43,8 @@ class ExportResource extends Resource
                     ->options(Marketplace::all()->pluck('name', 'name'))
                     ->required()
                     ->live(),
-//                    ->afterStateUpdated(function ($state, $livewire
-//                    ) {
-//	                    $modelClass = 'App\\Models\\Marketplaces\\' . $state;
-//
-//	                    if (class_exists($modelClass)) {
-//		                    $livewire->setMarketplaceModel(new $modelClass);
-//	                    } else {
-//		                    $livewire->setMarketplaceModel(new \App\Models\DefaultMarketplaceModel());
-//	                    }
-//                    }),
                 Forms\Components\TextInput::make('name_export')
                     ->required()
-	                ->reactive()
 					->afterStateUpdated(function (callable $set, $state) {
 						$set('slug', Str::slug($state, '_'));
 					}),
@@ -80,7 +69,7 @@ class ExportResource extends Resource
                         TextInput::make('Valeur par défaut')
                             ->columnSpan(1),
                     ])
-                    ->defaultItems(3)
+                    ->defaultItems(fn (?Export $record) => $record ? 0 : 3)
                     ->columnSpanFull(),
 
         Forms\Components\Actions::make([
@@ -89,7 +78,7 @@ class ExportResource extends Resource
                         ->action(function ($state, $livewire) {
 	                        // Instanciation du modèle marketplace dès le début :
 	                        $marketplaceName = $state['name_marketplace'];
-	                        $modelClass = 'App\\Models\\Marketplaces\\' . $marketplaceName;
+	                        $modelClass = 'App\\Models\\' . $marketplaceName;
 	                        if (class_exists($modelClass)) {
 		                        $model = new $modelClass;
 	                        } else {

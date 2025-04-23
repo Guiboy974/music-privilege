@@ -80,6 +80,7 @@ class Export extends Model
         'eco' => 'decimal',
         'ecotaxe' => 'decimal',
         'is_active' => 'boolean',
+        'attributs' => 'array',
     ];
 
     public function marketplaces(): HasMany

@@ -4,6 +4,8 @@ namespace App\Models;
 
 class GoogleShopping extends DefaultMarketplaceModel
 {
+    protected const BASE_URL = 'https://staging.music-privilege.fr/';
+    protected const IMAGE_PATH = 'img/600/744/contains/catalog/product';
 
     /** transforme des valeurs dans les champs
      * @param $attributeKey
@@ -23,13 +25,17 @@ class GoogleShopping extends DefaultMarketplaceModel
                 return $this->formatUrl($value);
             case 'base_image':
                 return $this->linkImage($value);
-            case 'is_in_stock':
-                return $this->availableValue($value);
+//            case 'availability':
+//                return $this->availableValue($value);
             default:
                 return parent::transformValue($attributeKey, $value);
         }
     }
 
+    /** limite la chaine de caractere et la fait terminer par le dernier point si plus de 150 caractere
+     * @param $value
+     * @return string
+     */
     protected function formatName($value): string {
         if (strlen($value) >= 150) {
             $substring = substr($value, 0, 150);
@@ -52,17 +58,23 @@ class GoogleShopping extends DefaultMarketplaceModel
         return number_format((float) $value, 2, '.', '') . ' EUR';
     }
 
-    //TODO valeur en https ou http
-    protected function formatUrl($value): string {
-        return $value;
+    /**
+     * @param string $value
+     * @return string
+     */
+    protected function formatUrl(string $value): string {
+        return self::BASE_URL . $value . '.html';
     }
 
-    //TODO URL directe vers image produit
-    protected function linkImage($value): string {
-        return $value;
+    /**
+     * @param string $value
+     * @return string
+     */
+    protected function linkImage(string $value): string {
+        return self::BASE_URL . self::IMAGE_PATH . $value;
     }
 
-    //TODO valeur attendue in stock, ot of stock, preorder
+    //TODO valeur attendue in stock, out of stock, preorder
     protected function availableValue($value): string {
         return $value;
     }
