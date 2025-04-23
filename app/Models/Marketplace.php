@@ -20,6 +20,9 @@ class Marketplace extends Model
         'url',
         'logo',
         'is_active',
+	    'separator',
+	    'delimiter',
+
     ];
 
     /**
@@ -31,4 +34,13 @@ class Marketplace extends Model
         'id' => 'integer',
         'is_active' => 'boolean',
     ];
+
+
+	/**
+	 * @param $attributeKey
+	 * @param $value
+	 * @return string
+	 */
+
+
 }

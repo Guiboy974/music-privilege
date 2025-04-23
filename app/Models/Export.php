@@ -39,7 +39,7 @@ class Export extends Model
         'is_in_stock',
         'manage_stock',
         'additional_image',
-        'available',
+        'status',
         'code_famille',
         'cost',
         'ean',

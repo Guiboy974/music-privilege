@@ -7,6 +7,8 @@ models:
     url: string nullable
     logo: string nullable
     is_active: boolean
+    separator: string nullable
+    delimiter: string nullable
 
   Export:
     name_marketplace: string
@@ -32,7 +34,7 @@ models:
     is_in_stock: boolean nullable
     manage_stock: integer nullable
     additional_image: string nullable
-    available: string nullable
+    status: string nullable
     code_famille: string nullable
     cost: decimal precision:8 scale:2 nullable
     ean: string nullable
@@ -77,7 +79,7 @@ models:
     is_in_stock: boolean nullable
     manage_stock: integer nullable
     additional_image: string nullable
-    available: string nullable
+    status: string nullable
     code_famille: string nullable
     cost: decimal precision:8 scale:2 nullable
     ean: string nullable

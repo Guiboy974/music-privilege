@@ -29,6 +29,21 @@ class MarketplaceResource extends Resource
                 Forms\Components\TextInput::make('url'),
                 Forms\Components\TextInput::make('logo'),
                 Forms\Components\Toggle::make('is_active'),
+	            // Section pour les champs CSV (Séparateur & Délimiteur)
+	            Forms\Components\Fieldset::make('CSV Options')
+		            ->schema([
+			            Forms\Components\Select::make('separator')
+				            ->label('Séparateur')
+				            ->options(self::getSeparators())
+				            ->required()
+				            ->default(','), // Valeur par défaut: ","
+
+			            Forms\Components\Select::make('delimiter')
+				            ->label('Délimiteur')
+				            ->options(self::getDelimiters())
+				            ->required()
+				            ->default('"'), // Valeur par défaut: '"'
+		            ])
             ]);
     }
 
@@ -46,14 +61,11 @@ class MarketplaceResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('url')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('logo')
-                    ->searchable(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
@@ -64,6 +76,7 @@ class MarketplaceResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -88,34 +101,51 @@ class MarketplaceResource extends Resource
         ];
     }
 
-    /**
-     * Renvoie les options disponibles pour les séparateurs de CSV.
-     *
-     * @return array
-     */
-    protected static function getSeparators(): array
-    {
-        return [
-            ';' => 'Point-virgule ( ; )',
-            ',' => 'Virgule ( , )',
-            '\t' => 'Tabulation (Tab)',
-            '|' => 'Barre verticale ( | )',
-            ' ' => 'Espace (blanc)',
-        ];
-    }
+	/**
+	 * Renvoie les options disponibles pour les séparateurs de CSV.
+	 *
+	 * @return array
+	 */
+	protected static function getSeparators(): array
+	{
+		return [
+			';' => 'Point-virgule ( ; )',
+			',' => 'Virgule ( , )',
+			'\t' => 'Tabulation (Tab)',
+			'|' => 'Barre verticale ( | )',
+			' ' => 'Espace (blanc)',
+		];
+	}
 
-    /**
-     * Renvoie les options disponibles pour les délimiteurs de CSV.
-     *
-     * @return array
-     */
-    protected static function getDelimiters(): array
-    {
-        return [
-            '"' => 'Double guillemet ( " )',
-            "'" => "Simple guillemet ( ' )",
-            ' ' => 'Aucun (espace)',
-            '|' => 'Barre verticale ( | )',
-        ];
-    }
+	/**
+	 * Renvoie les options disponibles pour les délimiteurs de CSV.
+	 *
+	 * @return array
+	 */
+	protected static function getDelimiters(): array
+	{
+		return [
+			'"' => 'Double guillemet ( " )',
+			"'" => "Simple guillemet ( ' )",
+			' ' => 'Aucun (espace)',
+			'|' => 'Barre verticale ( | )',
+		];
+	}
+
+	/**
+	 * Récupère le séparateur et le délimiteur associés à un Marketplace.
+	 *
+	 * @param int $id L'ID du Marketplace.
+	 * @return array Un tableau contenant le séparateur et le délimiteur.
+	 */
+	public static function getCsvOptions(int $id): array
+	{
+		$marketplace = Marketplace::findOrFail($id);
+
+		return [
+			'separator' => $marketplace->separator,
+			'delimiter' => $marketplace->delimiter,
+		];
+	}
+
 }

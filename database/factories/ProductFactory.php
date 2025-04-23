@@ -42,7 +42,7 @@ class ProductFactory extends Factory
             'is_in_stock' => fake()->boolean(),
             'manage_stock' => fake()->numberBetween(-10000, 10000),
             'additional_image' => fake()->word(),
-            'available' => fake()->word(),
+            'status' => fake()->word(),
             'code_famille' => fake()->word(),
             'cost' => fake()->randomFloat(0, 0, 9999999999.),
             'ean' => fake()->word(),
