@@ -39,6 +39,7 @@ class Export extends Model
         'is_in_stock',
         'manage_stock',
         'additional_image',
+	    'availability',
         'status',
         'code_famille',
         'cost',
@@ -60,6 +61,7 @@ class Export extends Model
         'ecotaxe',
         'frequence',
         'is_active',
+	    'attributs',
     ];
 
     /**

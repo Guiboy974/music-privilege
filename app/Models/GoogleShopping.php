@@ -76,6 +76,11 @@ class GoogleShopping extends DefaultMarketplaceModel
 
     //TODO valeur attendue in stock, out of stock, preorder
     protected function availableValue($value): string {
-        return $value;
+        //dd($value);
+        if ($value == 'dispo immédiate') {
+            return 'in stock';
+        } else {
+            return 'out of stock';
+        }
     }
 }
