@@ -25,8 +25,6 @@ class GoogleShopping extends DefaultMarketplaceModel
                 return $this->formatUrl($value);
             case 'base_image':
                 return $this->linkImage($value);
-//            case 'availability':
-//                return $this->availableValue($value);
             default:
                 return parent::transformValue($attributeKey, $value);
         }
@@ -74,13 +72,4 @@ class GoogleShopping extends DefaultMarketplaceModel
         return self::BASE_URL . self::IMAGE_PATH . $value;
     }
 
-    //TODO valeur attendue in stock, out of stock, preorder
-    protected function availableValue($value): string {
-        //dd($value);
-        if ($value == 'dispo immédiate') {
-            return 'in stock';
-        } else {
-            return 'out of stock';
-        }
-    }
 }

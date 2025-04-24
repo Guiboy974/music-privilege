@@ -27,10 +27,10 @@ return [
             'verify_ssl' => env('MAGENTO_VERIFY_SSL', true),
 
             /* Specify the timeout (in seconds) for the request. */
-            'timeout' => 30,
+            'timeout' => 300,
 
             /* Specify the connection timeout (in seconds) for the request. */
-            'connect_timeout' => 10,
+            'connect_timeout' => 300,
 
             /* Authentication method, choose either "oauth" or "token". */
             'authentication_method' => env('MAGENTO_AUTH_METHOD', 'token'),
@@ -44,10 +44,10 @@ return [
                 'threshold' => 10,
 
                 /* The timespan in minutes in which the failed requests should occur. */
-                'timespan' => 10,
+                'timespan' => 50,
 
                 /* The cooldown in minutes after the threshold is reached. */
-                'cooldown' => 2,
+                'cooldown' => 3,
             ],
         ],
     ],

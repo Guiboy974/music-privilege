@@ -13,8 +13,6 @@ class LeGuide extends Idealo
     public function transformValue($attributeKey, $value)
     {
         switch ($attributeKey) {
-
-            // TODO a définir spécifiquement pour chaque attribut avec la public fonction qui correspond
             case 'occasion':
                 return $this->formatCondition($value);
             default:
@@ -22,17 +20,18 @@ class LeGuide extends Idealo
         }
     }
 
-    //TODO valeur attendue new, used, refurbished
+    //TODO valeur attendue refurbished?
     protected function formatCondition($value): string
     {
-        if ($value == 'non')
+        if ($value == '0')
         {
-            $value = 'new';
-            return $value;
+            return 'new';
+        } elseif ($value == '1')
+        {
+            return 'used';
         } else
         {
-            $value = 'used';
-            return $value;
+            return '';
         }
     }
 

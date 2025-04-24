@@ -27,8 +27,10 @@ class Idealo extends DefaultMarketplaceModel
                 return $this->formatUrl($value);
             case 'base_image':
                 return $this->linkImage($value);
-            case 'is_in_stock':
-                return $this->availableValue($value);
+            case 'weight':
+                return $this->formatWeight($value);
+            case 'categories':
+                return $this->refactorCategories($value);
             default:
                 return parent::transformValue($attributeKey, $value);
         }
@@ -95,8 +97,17 @@ class Idealo extends DefaultMarketplaceModel
         return self::BASE_URL . self::IMAGE_PATH . $value;
     }
 
-    //TODO valeur attendue in stock, ot of stock, preorder
-    protected function availableValue($value): string {
-        return $value;
+    /**
+     * @param $value
+     */
+    protected function formatWeight($value) {
+        if ($value === null) {
+            return "";
+        }
+        return number_format((float) $value, 2, '.', '');
+    }
+
+    protected function refactorCategories($value) {
+
     }
 }

@@ -36,9 +36,8 @@ class MagentoProductService
 	        ->where('visibility', 'neq', '1') // Produits visibles
             //->where('sku', 'eq', 'AMP00AC-ACUSAC098')
             ->orderBy('created_at', 'desc')
-            ->paginate(1, 100)
+            ->paginate(1, 6000)
             ->get();
-
 
         try {
             // Appel à l'API pour récupérer les produits
