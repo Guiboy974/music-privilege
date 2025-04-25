@@ -77,12 +77,14 @@ class ExportResource extends Resource
                         ->label('Exporter en CSV')
                         ->action(function ($state, $livewire) {
 	                        // Instanciation du modèle marketplace dès le début :
-	                        $marketplaceName = $state['name_marketplace'];
+                            $magentoProductService = app(MagentoProductService::class);
+
+                            $marketplaceName = $state['name_marketplace'];
 	                        $modelClass = 'App\\Models\\' . $marketplaceName;
 	                        if (class_exists($modelClass)) {
-		                        $model = new $modelClass;
+		                        $model = new $modelClass($magentoProductService);
 	                        } else {
-		                        $model = new \App\Models\DefaultMarketplaceModel();
+		                        $model = new \App\Models\DefaultMarketplaceModel($magentoProductService);
 	                        }
 
                             // Récupérer les données Magento

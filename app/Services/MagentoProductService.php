@@ -82,13 +82,13 @@ class MagentoProductService
                     ->implode(', ');
 
                 // ➤ Chemins complets
-                $productData['category_paths'] = collect($categoryIds)
+                $productData['category_ids'] = collect($categoryIds)
                     ->map(function ($id) use ($categoryMap) {
                         return $categoryMap[$id]['path'] ?? null;
                     })
                     ->filter()
                     ->unique()
-                    ->implode(' %% ');
+                    ->implode(' > ');
 
                 $products[] = $productData;
             }
@@ -128,6 +128,26 @@ class MagentoProductService
 
         return $flat;
     }
+
+    /**
+     * @param string $sku
+     * @return float|null
+     */
+    public function getProductPrice(string $sku): ?float
+    {
+        try {
+            $response = $this->magento->get("products/{$sku}");
+            if ($response->ok() && isset($response['price'])) {
+                return (float)$response['price'];
+            }
+        } catch (\Exception $exception) {
+            \Log::error("Erreur lors de la récupération du prix du produit Magento pour SKU: {$sku}", [
+                'error' => $exception->getMessage(),
+            ]);
+        }
+        return null;
+    }
+
 
     /**
      * Mapper les données du produit Magento avec votre modèle local.

@@ -13,11 +13,22 @@ class LeGuide extends Idealo
     public function transformValue($attributeKey, $value)
     {
         switch ($attributeKey) {
+            case 'price':
+                return $this->formatPrice($value);
             case 'occasion':
                 return $this->formatCondition($value);
             default:
                 return parent::transformValue($attributeKey, $value);
         }
+    }
+
+    /** format le prix a mettre dans le champ
+     * @param $value
+     * @return string
+     */
+    protected function formatPrice($value): string
+    {
+        return number_format((float) $value, 2, '.', '');
     }
 
     //TODO valeur attendue refurbished?

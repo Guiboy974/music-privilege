@@ -25,7 +25,7 @@ class MarketplacePanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('marketplace')
-            ->path('marketplace')
+            ->path('/')
             ->login()
             ->colors([
                 'primary' => Color::Amber,
