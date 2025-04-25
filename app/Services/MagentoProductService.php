@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Product; // Assurez-vous que cette table locale est correctement configurée.
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use JustBetter\MagentoClient\Query\SearchCriteria;
 use JustBetter\MagentoClient\Client\Magento;
@@ -27,23 +28,20 @@ class MagentoProductService
 
     /**
      * Synchronise les produits du catalogue Magento vers la base locale.
+     * Renvoie un tableau de produits avec leurs catégories et chemins complets.
      */
     public function syncProducts(): array
     {
-        // Construire les critères de recherche pour les produits actifs
         $searchCriteria = SearchCriteria::make()
-            ->where('status', '1')                 // Produits actifs
-	        ->where('visibility', 'neq', '1') // Produits visibles
-            //->where('sku', 'eq', 'AMP00AC-ACUSAC098')
+            ->where('status', '1')
+            ->where('visibility', 'neq', '1')
             ->orderBy('created_at', 'desc')
             ->paginate(1, 6000)
             ->get();
 
         try {
-            // Appel à l'API pour récupérer les produits
             $response = $this->magento->get('products', $searchCriteria);
 
-            // Gestion des erreurs d'API
             if ($response->failed()) {
                 Log::error('Magento API Error for Products', [
                     'status' => $response->status(),
@@ -54,14 +52,48 @@ class MagentoProductService
 
             Log::info('Magento Products Response', ['items' => count($response['items'] ?? [])]);
 
-            // Parcourir les produits
-	        $products = [];
+            // Récupération et mapping des catégories avec leur nom + chemin
+            $flatCategories = $this->flattenCategories(
+                $this->magento->get('categories')['children_data'] ?? []
+            );
 
-	        foreach ($response['items'] as $productData) {
-		        $products[] = $productData; // Ou $this->mapProductData($productData) si tu veux un format allégé
-	        }
+            $categoryMap = collect($flatCategories)->keyBy(fn($cat) => (string) $cat['id']);
 
-	        return $products;
+            $products = [];
+
+            foreach ($response['items'] as $productData) {
+
+                // ➤ Récupérer les category_ids (priorité : extension_attributes > custom_attributes)
+                $categoryIds = collect($productData['extension_attributes']['category_links'] ?? [])
+                    ->pluck('category_id');
+
+                if ($categoryIds->isEmpty()) {
+                    $categoryIds = collect($productData['custom_attributes'] ?? [])
+                        ->firstWhere('attribute_code', 'category_ids')['value'] ?? [];
+                    $categoryIds = collect($categoryIds);
+                }
+
+                $categoryIds = $categoryIds->map(fn($id) => (string) $id)->toArray();
+
+                // ➤ Catégories (noms simples)
+                $productData['categories'] = collect($categoryIds)
+                    ->map(fn($id) => $categoryMap[$id]['name'] ?? 'Inconnue')
+                    ->unique()
+                    ->implode(', ');
+
+                // ➤ Chemins complets
+                $productData['category_paths'] = collect($categoryIds)
+                    ->map(function ($id) use ($categoryMap) {
+                        return $categoryMap[$id]['path'] ?? null;
+                    })
+                    ->filter()
+                    ->unique()
+                    ->implode(' %% ');
+
+                $products[] = $productData;
+            }
+
+            return $products;
 
         } catch (\Exception $exception) {
             Log::error('Erreur lors de la synchronisation des produits Magento', [
@@ -69,6 +101,32 @@ class MagentoProductService
             ]);
             throw $exception;
         }
+    }
+
+    /**
+     * Aplati récursivement les catégories pour obtenir un tableau plat avec le chemin complet.
+     *
+     * @param array $categories
+     * @param array $flat
+     * @param array $parentPath
+     * @return array
+     */
+    protected function flattenCategories(array $categories, array &$flat = [], array $parentPath = []): array
+    {
+        foreach ($categories as $cat) {
+            $currentPath   = array_merge($parentPath, [$cat['name'] ?? '']);
+            $flat[] = [
+                'id'   => $cat['id'],
+                'name' => $cat['name'] ?? 'Inconnue',
+                'path' => $currentPath,
+            ];
+
+            if (!empty($cat['children_data'])) {
+                $this->flattenCategories($cat['children_data'], $flat, $currentPath);
+            }
+        }
+
+        return $flat;
     }
 
     /**
