@@ -4,12 +4,11 @@ namespace App\Filament\Resources;
 use App\Filament\Exports\ExportModelCdiscount;
 use App\Filament\Exports\ProductExporter;
 use App\Filament\Resources\ExportResource\Pages;
-use App\Filament\Resources\ExportResource\Pages\CreateExport;
 use App\Filament\Resources\ExportResource\RelationManagers;
 use App\Models\Export;
 use App\Models\Marketplace;
 use Filament\Forms;
-use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TextInput;
@@ -21,11 +20,8 @@ use App\Models\ExportAttributs;
 use Illuminate\Support\Facades\Storage;
 use League\Csv\Writer;
 use Log;
-use Maatwebsite\Excel\Facades\Excel;
 use App\Services\MagentoProductService;
-use Filament\Tables\Actions\ExportAction;
 use Filament\Notifications\Notification;
-use Livewire\Component;
 use Illuminate\Support\Str;
 
 class ExportResource extends Resource
@@ -48,6 +44,13 @@ class ExportResource extends Resource
 					->afterStateUpdated(function (callable $set, $state) {
 						$set('slug', Str::slug($state, '_'));
 					}),
+                Toggle::make('include_delivery_cost')
+                    ->label('Ajouter les frais de port')
+                    ->helperText('Coût calculé automatiquement en fonction du prix.')
+                    ->default(true),
+                Toggle::make('include_delivery_time')
+                    ->label('Ajouter le délais de livraison')
+                    ->default(true),
                 Repeater::make('attributs')
                     ->columns(3)
                     ->schema([
@@ -75,10 +78,14 @@ class ExportResource extends Resource
         Forms\Components\Actions::make([
             Forms\Components\Actions\Action::make('export')
                         ->label('Exporter en CSV')
-                        ->action(function ($state, $livewire) {
+                        ->action(function ($state) {
 	                        // Instanciation du modèle marketplace dès le début :
                             $magentoProductService = app(MagentoProductService::class);
+                            // Récupérer les données Magento
+                            $products = $magentoProductService->syncProducts();
+                            $magentoProductService->preloadPricesFromProducts($products);
 
+                            //Instancie le modèle
                             $marketplaceName = $state['name_marketplace'];
 	                        $modelClass = 'App\\Models\\' . $marketplaceName;
 	                        if (class_exists($modelClass)) {
@@ -87,11 +94,7 @@ class ExportResource extends Resource
 		                        $model = new \App\Models\DefaultMarketplaceModel($magentoProductService);
 	                        }
 
-                            // Récupérer les données Magento
-                            $magentoProductService = app(MagentoProductService::class);
-                            $magentoProducts = $magentoProductService->syncProducts();
-
-	                        // Obtenir le Marketplace sélectionné
+                            // Obtenir le Marketplace sélectionné
 	                        $marketplaceName = $state['name_marketplace'];
 	                        $marketplace = Marketplace::where('name', $marketplaceName)->first();
 
@@ -113,43 +116,99 @@ class ExportResource extends Resource
 	                        $csv->setDelimiter($separator);
 	                        $csv->setEnclosure($delimiter);
 
+                            $attributes = $state['attributs'];
+
+                            if (!empty($state['include_delivery_cost'])) {
+                                $attributes[] = [
+                                    'attribut'  => 'delivery_cost',
+                                    'entete' => $marketplaceName === 'GoogleShopping' ? 'shipping' : 'delivery_cost',
+                                    'Valeur par défaut'  => null,
+                                ];
+                            }
+
+                            if (!empty($state['include_delivery_time'])) {
+                                $attributes[] = [
+                                    'attribut' => 'delivery_time',
+                                    'entete' => $marketplaceName === 'GoogleShopping' ? 'availibility_date' : 'deliveryTime',
+                                    'Valeur par défaut' => 'livraison sous 2 à 3 jours',
+                                ];
+                            }
+
 	                        // Construire les en-têtes dynamiques à partir du formulaire
-                            $headers = collect($state['attributs'])
+                            $headers = collect($attributes)
                                 ->map(fn($item) => $item['entete'] ?? $item['attribut'])
                                 ->toArray();
                             $csv->insertOne($headers);
 
-	                        //Parcourir et traiter les produits
-	                        foreach ($magentoProducts as $product) {
-		                        $transformedData = collect($state['attributs'])->map(function ($attribute) use ($product, $model) {
-			                        $attributeKey = $attribute['attribut'];
-			                        $defaultValue = $attribute['Valeur par défaut'] ?? null;
-			                        $value = null;
+                            //Parcourir et traiter les produits
+                            foreach ($products as $product)
+                            {
+                                // On fixe le SKU pour que transformValue() le retrouve
+                                $model->setCurrentSku($product['sku'] ?? '');
 
-			                        if (isset($product[$attributeKey])) {
-				                        // Si la clé est directement dans le tableau principal
-				                        $value = $product[$attributeKey];
-			                        } elseif (isset($product['extension_attributes'][$attributeKey])) {
-				                        // Si la clé se trouve dans 'extension_attributes'
-				                        $value = $product['extension_attributes'][$attributeKey];
-			                        } elseif (isset($product['custom_attributes'])) {
-				                        // Rechercher dans 'custom_attributes' via 'attribute_code'
-				                        $customAttribute = collect($product['custom_attributes'])
-					                        ->firstWhere('attribute_code', $attributeKey);
-				                        Log::warning('Attribut manquant pour un produit', ['attribut' => $attributeKey, 'sku' => $product['sku']]);
+                                $transformedData = collect($attributes)->map(function ($attribute) use ($product, $model) {
+                                    $attributeKey = $attribute['attribut'];
+                                    $defaultValue = $attribute['Valeur par défaut'] ?? null;
+                                    $value = null;
 
-				                        $value = $customAttribute['value'] ?? null;
-			                        }
+                                    // **CAS SPÉCIAL delivery_cost** → on force la valeur sur le prix brut
+                                    if ($attributeKey === 'delivery_cost')
+                                    {
+                                        $value = $product['price'] ?? 0.0;
+                                    } elseif ($attributeKey === 'delivery_time')  {
+                                        // Récupérez la quantité en stock
+                                        $stockQty = null;
 
-			                        // Transformation selon le modèle Marketplace (si nécessaire)
-			                        if (is_object($model)) {
-				                        $value = $model->transformValue($attributeKey, $value);
-			                        }
-			                        return $value ?? $defaultValue; // Valeur ou valeur par défaut
-		                        })->toArray();
+                                        // Chercher mfdc_stock_qty dans les différentes structures possibles
+                                        if (isset($product['custom_attributes'])) {
+                                            $customAttribute = collect($product['custom_attributes'])
+                                                ->firstWhere('attribute_code', 'mfdc_stock_qty');
+                                            $stockQty = $customAttribute['value'] ?? null;
+                                        }
 
-		                        $csv->insertOne($transformedData); // Insérer la ligne dans le CSV
-	                        }
+                                        // Déterminer le délai de livraison en fonction du stock
+                                        if ($stockQty !== null) {
+                                            if ($stockQty >= 1) {
+                                                $value = $defaultValue;
+                                            } elseif ($stockQty <= 0) {
+                                                $value = 'delais de livraison : 10 jours';
+                                            }
+                                        } else {
+                                            // Si on ne trouve pas l'information de stock, utiliser la valeur par défaut
+                                            $value = $defaultValue;
+                                        }
+                                    } else
+                                    {
+                                        //  extraire $value depuis $product
+                                        if (isset($product[$attributeKey]))
+                                        {
+                                            // Si la clé est directement dans le tableau principal
+                                            $value = $product[$attributeKey];
+                                        } else if (isset($product['extension_attributes'][$attributeKey]))
+                                        {
+                                            // Si la clé se trouve dans 'extension_attributes'
+                                            $value = $product['extension_attributes'][$attributeKey];
+                                        } else if (isset($product['custom_attributes']))
+                                        {
+                                            // Rechercher dans 'custom_attributes' via 'attribute_code'
+                                            $customAttribute = collect($product['custom_attributes'])
+                                                ->firstWhere('attribute_code', $attributeKey);
+                                            Log::warning('Attribut manquant pour un produit', ['attribut' => $attributeKey, 'sku' => $product['sku']]);
+
+                                            $value = $customAttribute['value'] ?? null;
+                                        }
+                                    }
+
+                                    // Transformation selon le modèle Marketplace (si nécessaire)
+                                    if (is_object($model))
+                                    {
+                                        $value = $model->transformValue($attributeKey, $value);
+                                    }
+                                    return $value ?? $defaultValue; // Valeur ou valeur par défaut
+                                })->toArray();
+
+                                $csv->insertOne($transformedData); // Insérer la ligne dans le CSV
+                            }
 
 	                        // Créer et sauvegarder le fichier
 	                        $slug = Str::slug($state['name_export'], '_');

@@ -12,6 +12,7 @@ use JustBetter\MagentoClient\Client\Magento;
 class MagentoProductService
 {
     protected Magento $magento;
+    protected array $pricesCache = [];
 
     public function __construct(Magento $magento)
     {
@@ -130,24 +131,23 @@ class MagentoProductService
     }
 
     /**
-     * @param string $sku
-     * @return float|null
+     * Précharge les prix en mémoire à partir d’un tableau de produits.
      */
-    public function getProductPrice(string $sku): ?float
+    public function preloadPricesFromProducts(array $products): void
     {
-        try {
-            $response = $this->magento->get("products/{$sku}");
-            if ($response->ok() && isset($response['price'])) {
-                return (float)$response['price'];
+        foreach ($products as $p) {
+            if (!empty($p['sku']) && isset($p['price'])) {
+                $this->pricesCache[$p['sku']] = (float) $p['price'];
             }
-        } catch (\Exception $exception) {
-            \Log::error("Erreur lors de la récupération du prix du produit Magento pour SKU: {$sku}", [
-                'error' => $exception->getMessage(),
-            ]);
         }
-        return null;
+
+        Log::info('Magento prices preloaded', ['count' => count($this->pricesCache)]);
     }
 
+    public function getCachedPrice(string $sku): ?float
+    {
+        return $this->pricesCache[$sku] ?? null;
+    }
 
     /**
      * Mapper les données du produit Magento avec votre modèle local.

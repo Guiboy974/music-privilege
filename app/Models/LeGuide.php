@@ -17,6 +17,8 @@ class LeGuide extends Idealo
                 return $this->formatPrice($value);
             case 'occasion':
                 return $this->formatCondition($value);
+                case 'mfdc_stock_qty':
+                    return $this->valueAvailability($value);
             default:
                 return parent::transformValue($attributeKey, $value);
         }
@@ -40,9 +42,22 @@ class LeGuide extends Idealo
         } elseif ($value == '1')
         {
             return 'used';
-        } else
+        } elseif ($value == '2')
         {
-            return '';
+            return 'refurbished';
+        }
+        return '';
+    }
+
+    /** affiche si le produit est disponible ou en pré commande
+     * @param $value
+     * @return string
+     */
+    protected function valueAvailability($value): string {
+        if ($value >= '1') {
+            return 'In stock';
+        } else {
+            return 'Pre-order';
         }
     }
 

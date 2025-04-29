@@ -25,6 +25,8 @@ class GoogleShopping extends DefaultMarketplaceModel
                 return $this->formatUrl($value);
             case 'base_image':
                 return $this->linkImage($value);
+            case 'mfdc_stock_out':
+                return $this->valueAvailability($value);
             default:
                 return parent::transformValue($attributeKey, $value);
         }
@@ -70,6 +72,18 @@ class GoogleShopping extends DefaultMarketplaceModel
      */
     protected function linkImage(string $value): string {
         return self::BASE_URL . self::IMAGE_PATH . $value;
+    }
+
+    /** affiche si le produit est disponible ou en pré commande
+     * @param $value
+     * @return string
+     */
+    protected function valueAvailability($value): string {
+        if ($value >= '1') {
+            return 'in_stock';
+        } else {
+            return 'preorder';
+        }
     }
 
 }

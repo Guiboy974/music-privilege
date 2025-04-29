@@ -3,21 +3,24 @@
 namespace App\Models;
 
 use App\Services\MagentoProductService;
+use Illuminate\Support\Facades\Log;
 use JustBetter\MagentoClient\Client\Magento;
 
 class DefaultMarketplaceModel extends AbstractMarketplaceModel {
 
-    protected ?MagentoProductService $magentoProductService;
-    protected ?Magento $magento = null;
+    // Seuil et frais
+    private const FREE_SHIPPING_THRESHOLD = 35.0;
+    private const DELIVERY_FEE = 6.90;
 
-    //TODO corriger
-    public function __construct(MagentoProductService $magentoProductService = null)
+    /** @var string|null Stocke le SKU courant dès qu’il est rencontré */
+    protected ?string $currentSku = null;
+
+    /** Setter public pour fixer le SKU avant chaque boucle produit */
+    public function setCurrentSku(string $sku): self
     {
-        $this->magentoProductService = $magentoProductService;
-        if ($magentoProductService) {
-            $this->magento = $magentoProductService->getMagento();
-        }
-        }
+        $this->currentSku = $sku;
+        return $this;
+    }
 
     /**
      * Transforme la valeur selon la clé (description, etc.)
@@ -31,7 +34,29 @@ class DefaultMarketplaceModel extends AbstractMarketplaceModel {
             case 'categories':
                 return $this->refactorCategories($value);
             case 'delivery_cost':
-                return $this->calculateDeliveryCost($value);
+                $price = is_numeric($value) ? (float) $value : 0.0;
+
+                // Si pas de SKU, on fait un fallback tout simple
+                if (empty($this->currentSku))
+                {
+                    Log::warning('DefaultMarketplaceModel: delivery_cost sans SKU',
+                        ['price' => $price]
+                    );
+                    $fee = $price < self::FREE_SHIPPING_THRESHOLD
+                        ? self::DELIVERY_FEE
+                        : 0.0;
+                    return number_format($fee, 2, '.', '') . ' EUR';
+                }
+                // Sinon, lecture du cache (aucun appel Magento ici)
+                $cached = app(MagentoProductService::class)
+                    ->getCachedPrice($this->currentSku);
+
+                $effective = $cached ?? $price;
+                $fee = $effective < self::FREE_SHIPPING_THRESHOLD
+                    ? self::DELIVERY_FEE
+                    : 0.0;
+                return number_format($fee, 2, '.', '') . ' EUR';
+
             default:
                 return parent::transformValue($attributeKey, $value);
         }
@@ -70,22 +95,6 @@ class DefaultMarketplaceModel extends AbstractMarketplaceModel {
         // Si `$value` est vide, retourner uniquement le préfixe
         return $categoriesInit;
 
-    }
-
-
-    /**
-     * Calcule le coût de livraison basé sur le prix depuis Magento.
-     */
-    protected function calculateDeliveryCost(?float $price): string
-    {
-        // Appelez Magento pour récupérer les informations sur le produit.
-        $originalPrice = $this->magentoProductService->getProductPrice('product_sku'); // Remplacez 'product_sku' avec la clé SKU ou ID approprié.
-
-        // Utilisez le prix original (ou de fallback au $price fourni)
-        $priceFloat = $originalPrice ?? $price;
-
-        // Calculez le coût de livraison
-        return $priceFloat < 35 ? '6.90 EUR' : '0';
     }
 
 }
